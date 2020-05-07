@@ -1,0 +1,69 @@
+#!/Volumes/dev/dev/scratch/venv/bin/python
+# -*- coding: utf-8 -*-
+import re
+import sys
+import os
+import subprocess
+
+from pip._internal.cli.main import main
+from pip._internal.exceptions import PipError
+from pip._internal.cli.main_parser import parse_command
+
+if __name__ == '__main__':
+    requirements_address = REPLACE
+
+    sys.argv[0] = re.sub(r'(-script\.pyw?|\.exe)?$', '', sys.argv[0])
+
+
+    main_exit_code = main()
+
+    if main_exit_code == 0:
+        try:
+            cmd_name, cmd_args = parse_command(sys.argv[1:])
+        except PipError as exc:
+            sys.stderr.write('ERROR: %s' % exc)
+            sys.stderr.write(os.linesep)
+            sys.exit(1)
+
+        # remove requirements.txt from arg list
+        if '-r' in cmd_args:
+            _idx = cmd_args.index('-r')
+            del cmd_args[_idx]
+            del cmd_args[_idx]
+
+        arg_names = {a.split('==')[0]:a for a in cmd_args}
+
+        if cmd_name == 'install':
+            subprocess.call(['touch', requirements_address])
+
+            with open(requirements_address, 'r+') as f:
+                _lines = f.readlines()
+                lines = [line.rstrip() for line in _lines]
+                line_names = [line.split('==')[0] for line in lines]
+                f.seek(0)
+
+                for line, line_name, _line in zip(lines, line_names, _lines):
+                    if line_name in arg_names.keys():
+                        f.write(f'{arg_names[line_name]}\n')
+                        del arg_names[line_name]
+                    else:
+                        f.write(_line)
+
+                for cmd_arg in arg_names.values():
+                    f.write(f'{cmd_arg}\n')
+                f.truncate()
+
+
+        elif cmd_name == 'uninstall':
+            try:
+                with open(requirements_address, 'r+') as f:
+                    lines = f.readlines()
+                    f.seek(0)
+                    for line in lines:
+                        l = line.rstrip().split('==')[0]
+                        if l not in arg_names.keys():
+                            f.write(line)
+                    f.truncate()
+            except:
+                pass
+    sys.exit(main_exit_code)
