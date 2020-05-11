@@ -1,4 +1,4 @@
-#!/Volumes/dev/dev/scratch/venv/bin/python
+REPLACE_PYTHON
 # -*- coding: utf-8 -*-
 import re
 import sys
