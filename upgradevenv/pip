@@ -3,7 +3,6 @@ REPLACE_PYTHON
 import re
 import sys
 import os
-import subprocess
 
 from pip._internal.cli.main import main
 from pip._internal.exceptions import PipError
@@ -34,8 +33,6 @@ if __name__ == '__main__':
         arg_names = {a.split('==')[0]:a for a in cmd_args}
 
         if cmd_name == 'install':
-            subprocess.call(['touch', requirements_address])
-
             with open(requirements_address, 'r+') as f:
                 _lines = f.readlines()
                 lines = [line.rstrip() for line in _lines]
