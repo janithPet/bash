@@ -39,8 +39,9 @@ fi
 cp /Volumes/dev/dev/bash/upgradevenv/pip /Volumes/dev/dev/bash/upgradevenv/pip.sub
 
 #replace appropriate paths
-sed -i '' 's, REPLACE, '"\'$path_to_req\'"',' /Volumes/dev/dev/bash/upgradevenv/pip.sub
-sed -i '' 's, REPLACE_PYTHON, '"\'#!~/$path_to_venv/bin/python\'"',' /Volumes/dev/dev/bash/upgradevenv/pip.sub
+path_to_python="#!$(cd "$(dirname "$1")"; pwd)/$(basename "$path_to_venv")/bin/python"
+sed -i '' "s|REPLACE_PYTHON|$path_to_python|g" /Volumes/dev/dev/bash/upgradevenv/pip.sub
+sed -i '' 's|REPLACE|'"\'$path_to_req\'"'|g' /Volumes/dev/dev/bash/upgradevenv/pip.sub
 
 #move to inside venv
 mv /Volumes/dev/dev/bash/upgradevenv/pip.sub "$path_to_venv/bin/pip"
